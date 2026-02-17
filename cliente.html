@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESPETTO LOUNGE - Cardápio</title>
+<style>
+
+body{
+  margin:0;
+  font-family:Arial;
+  background:#111;
+  color:white;
+}
+
+header{
+  background:#b30000;
+  padding:20px;
+  text-align:center;
+}
+
+.container{
+  padding:15px;
+}
+
+.categoria{
+  margin-top:25px;
+}
+
+.produto{
+  background:#222;
+  padding:12px;
+  border-radius:8px;
+  margin:8px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+button{
+  background:#ff4500;
+  color:white;
+  border:none;
+  padding:8px;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:0.8;
+}
+
+.carrinho{
+  background:#000;
+  padding:15px;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-height:300px;
+  overflow:auto;
+}
+
+input{
+  width:100%;
+  padding:8px;
+  margin:5px 0;
+  border-radius:5px;
+  border:none;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍢 ESPETTO LOUNGE</h1>
+  <p>Faça seu pedido</p>
+</header>
+
+<div class="container">
+
+<!-- ESPETINHOS -->
+<div class="categoria">
+<h2>ESPETINHOS</h2>
+
+<div class="produto">Alcatra - R$15 <button onclick="add('Alcatra',15)">+</button></div>
+<div class="produto">Contra Filé - R$17 <button onclick="add('Contra Filé',17)">+</button></div>
+<div class="produto">Pão de Alho - R$6 <button onclick="add('Pão de Alho',6)">+</button></div>
+<div class="produto">Picanha - R$16 <button onclick="add('Picanha',16)">+</button></div>
+<div class="produto">Queijo - R$10 <button onclick="add('Queijo',10)">+</button></div>
+
+</div>
+
+<!-- BEBIDAS -->
+<div class="categoria">
+<h2>BEBIDAS</h2>
+
+<div class="produto">Cerveja Heineken - R$10 <button onclick="add('Heineken',10)">+</button></div>
+<div class="produto">Cerveja Budweiser - R$9 <button onclick="add('Budweiser',9)">+</button></div>
+<div class="produto">Cerveja Skol - R$5 <button onclick="add('Skol',5)">+</button></div>
+<div class="produto">Água - R$3,50 <button onclick="add('Água',3.5)">+</button></div>
+<div class="produto">Água com Gás - R$5 <button onclick="add('Água com Gás',5)">+</button></div>
+<div class="produto">Coca-Cola Lata - R$5 <button onclick="add('Coca-Cola Lata',5)">+</button></div>
+<div class="produto">Coca-Cola Lata Zero - R$5 <button onclick="add('Coca-Cola Zero',5)">+</button></div>
+<div class="produto">Ice - R$10 <button onclick="add('Ice',10)">+</button></div>
+<div class="produto">Coca-Cola 1L - R$10 <button onclick="add('Coca-Cola 1L',10)">+</button></div>
+<div class="produto">Coca-Cola 1L Zero - R$10 <button onclick="add('Coca-Cola 1L Zero',10)">+</button></div>
+<div class="produto">Guaraná 1L - R$10 <button onclick="add('Guaraná 1L',10)">+</button></div>
+<div class="produto">Sprite - R$5 <button onclick="add('Sprite',5)">+</button></div>
+<div class="produto">Fanta Laranja - R$5 <button onclick="add('Fanta Laranja',5)">+</button></div>
+
+</div>
+
+<!-- BALDINHOS -->
+<div class="categoria">
+<h2>BALDINHOS DE CERVEJA</h2>
+
+<div class="produto">Baldinho Skol Piriguete (6) - R$31 <button onclick="add('Baldinho Skol 6un',31)">+</button></div>
+<div class="produto">Baldinho Budweiser (4) - R$37 <button onclick="add('Baldinho Budweiser 4un',37)">+</button></div>
+<div class="produto">Baldinho Heineken (4) - R$41 <button onclick="add('Baldinho Heineken 4un',41)">+</button></div>
+
+</div>
+
+</div>
+
+<!-- CARRINHO -->
+<div class="carrinho">
+
+<h3>🛒 Seu Pedido</h3>
+<ul id="lista"></ul>
+
+<h3>Total: R$ <span id="total">0</span></h3>
+
+<input type="text" id="nome" placeholder="Seu nome">
+<input type="text" id="mesa" placeholder="Número da mesa">
+
+<button onclick="finalizar()">Enviar Pedido</button>
+
+</div>
+
+<script>
+
+let carrinho = [];
+let total = 0;
+
+function add(nome, valor){
+  carrinho.push({nome,valor});
+  total += valor;
+  atualizar();
+}
+
+function atualizar(){
+  let lista = document.getElementById("lista");
+  lista.innerHTML="";
+
+  carrinho.forEach(item=>{
+    let li = document.createElement("li");
+    li.textContent = item.nome + " - R$ " + item.valor;
+    lista.appendChild(li);
+  });
+
+  document.getElementById("total").textContent = total.toFixed(2);
+}
+
+function finalizar(){
+  let nome = document.getElementById("nome").value;
+  let mesa = document.getElementById("mesa").value;
+
+  if(!nome || !mesa){
+    alert("Preencha seu nome e mesa!");
+    return;
+  }
+
+  let pedido = {
+    id: Date.now(),
+    cliente:nome,
+    mesa:mesa,
+    itens:carrinho,
+    total:total,
+    status:"Pendente"
+  };
+
+  let pedidos = JSON.parse(localStorage.getItem("pedidosOnline")) || [];
+  pedidos.push(pedido);
+  localStorage.setItem("pedidosOnline", JSON.stringify(pedidos));
+
+  alert("Pedido enviado para a cozinha!");
+
+  carrinho=[];
+  total=0;
+  atualizar();
+}
+
+
+  if(!nome || !mesa){
+    alert("Preencha seu nome e mesa!");
+    return;
+  }
+
+  let pedido = {
+    cliente:nome,
+    mesa:mesa,
+    itens:carrinho,
+    total:total
+  };
+
+  let pedidos = JSON.parse(localStorage.getItem("pedidosOnline")) || [];
+  pedidos.push(pedido);
+  localStorage.setItem("pedidosOnline", JSON.stringify(pedidos));
+
+  alert("Pedido enviado com sucesso!");
+
+  carrinho=[];
+  total=0;
+  atualizar();
+
+</script>
+
+</body>
+</html>
